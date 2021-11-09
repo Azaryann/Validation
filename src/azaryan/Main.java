@@ -32,22 +32,36 @@ class Main {
             field.setAccessible(true);
             String value = field.get(obj).toString();
             String name = field.getName();
+
             if (field.isAnnotationPresent(Email.class)) {
-                Pattern pattern = Pattern.compile(REGEX);
-                Email nameAnnot = field.getAnnotation(Email.class);
-                name = nameAnnot.toString();
-            } else if (field.isAnnotationPresent(Length.class)) {
-                Length nameAnnot = field.getAnnotation(Length.class);
-                name = nameAnnot.toString();
-            } else if (field.isAnnotationPresent(Adulthood.class)) {
+                String email = field.get(obj).toString();
+                Pattern compile = Pattern.compile(REGEX);
+                if (!compile.matcher(email).matches()) {
+                    System.out.println("Invalid Email ");
+                }
+            }
+            else if (field.isAnnotationPresent(Length.class)) {
+                Length annotation = field.getAnnotation(Length.class);
+                if (name.length() < annotation.min() || name.length() > annotation.max()) {
+                    String msg = " Write name for this range" +
+                            "(" + annotation.min() + "," + annotation.max() + ")";
+                    System.out.println(msg);
+                }
+            }
+            else if (field.isAnnotationPresent(Adulthood.class)) {
                 Adulthood nameAnnot = field.getAnnotation(Adulthood.class);
                 name = nameAnnot.toString();
-            } else if (field.isAnnotationPresent(Max.class)) {
-                Max nameAnnot = field.getAnnotation(Max.class);
-                name = nameAnnot.toString();
-            } else if (field.isAnnotationPresent(Min.class)) {
-                Min nameAnnot = field.getAnnotation(Min.class);
-                name = nameAnnot.toString();
+            }
+            else if (field.isAnnotationPresent(Min.class) && field.isAnnotationPresent(Max.class)) {
+                Min annMin = field.getAnnotation(Min.class);
+                Max annMax = field.getAnnotation(Max.class);
+                int discountRate = field.get(obj).hashCode();
+
+                if (discountRate < annMin.value()) {
+                    System.out.println("Your number is less than the discount rate");
+                } else if (discountRate > annMax.value()) {
+                    System.out.println("Your number is greater than the discount rate");
+                }
             }
             System.out.println(field.getName() + " = " + value);
         }
